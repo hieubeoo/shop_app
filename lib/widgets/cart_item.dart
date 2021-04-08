@@ -36,6 +36,29 @@ class CartItem extends StatelessWidget {
           vertical: 4,
         ),
       ),
+      confirmDismiss: (direction) {
+        return showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('Xóa vật phẩm?'),
+            content: Text('Bạn muốn xóa vật phẩm này?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop(false);
+                },
+                child: Text('Không'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop(true);
+                },
+                child: Text('Có'),
+              ),
+            ],
+          ),
+        );
+      },
       direction: DismissDirection.endToStart,
       onDismissed: (direction) {
         Provider.of<Cart>(context, listen: false).removeItem(productId);
@@ -48,8 +71,10 @@ class CartItem extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(8),
           child: ListTile(
-            leading: Text('${price}đ',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
+            leading: Text(
+              '${price}đ',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+            ),
             title: Text(title),
             subtitle: Text('Tổng cộng: \$${(price * quantity)}'),
             trailing: Text('$quantity x'),
