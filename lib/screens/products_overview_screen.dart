@@ -10,36 +10,8 @@ enum FilterOptions {
   All,
 }
 
-class ProductsOverviewScreen extends StatefulWidget {
-  @override
-  _ProductsOverviewScreenState createState() => _ProductsOverviewScreenState();
-}
-
-class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
-  var _showOnlyFavorites = false;
-  var _isInit = true;
-  var _isLoading = false;
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    if (_isInit) {
-      setState(() {
-        _isLoading = true;
-      });
-      Provider.of<ProductsProvider>(context).fetAndSetProducts().then((_) {
-        setState(() {
-          _isLoading = false;
-        });
-      });
-    }
-    _isInit = false;
-    super.didChangeDependencies();
-  }
-
+class ProductsOverviewScreen extends StatelessWidget {
+  final _showOnlyFavorites = false;
   @override
   Widget build(BuildContext context) {
     // return Scaffold(
@@ -95,12 +67,26 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
     //         )
     //       : ProductsGrid(_showOnlyFavorites),
     // );
-    return _isLoading
-        ? Center(
-            child: CircularProgressIndicator(
-              backgroundColor: Colors.grey,
-            ),
-          )
-        : ProductsGrid(_showOnlyFavorites);
+    return FutureBuilder(
+        future: Provider.of<ProductsProvider>(context, listen: false)
+            .fetAndSetProducts(),
+        builder: (ctx, dataSnapshot) {
+          if (dataSnapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(
+                backgroundColor: Colors.grey,
+              ),
+            );
+          } else {
+            if (dataSnapshot.error != null) {
+              return Center(
+                child: Text('Something wrong :))'),
+              );
+            } else {
+              return ProductsGrid(_showOnlyFavorites);
+            }
+          }
+        });
+    // });
   }
 }
