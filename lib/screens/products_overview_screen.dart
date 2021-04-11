@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../widgets/product_gird.dart';
-
 import '../providers/product_provider.dart';
 
 enum FilterOptions {
@@ -35,6 +33,5 @@ class ProductsOverviewScreen extends StatelessWidget {
             }
           }
         });
-    // });
   }
 }

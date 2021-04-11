@@ -10,6 +10,8 @@ class ProductsProvider with ChangeNotifier {
     return _items.where((productItem) => productItem.isFavorite).toList();
   }
 
+  final String authToken;
+  ProductsProvider(this.authToken, this._items);
   List<Product> get items {
     return [..._items];
   }
@@ -20,7 +22,7 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> addProductItem(Product product) async {
     const url =
-        'https://aquarium-shop-b8c06-default-rtdb.firebaseio.com/products.json';
+        'https://aquarium-shop-b8c06-default-rtdb.firebaseio.com/products.json?';
     try {
       final response = await http.post(Uri.parse(url),
           body: json.encode({
@@ -45,8 +47,8 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> fetAndSetProducts() async {
-    const url =
-        'https://aquarium-shop-b8c06-default-rtdb.firebaseio.com/products.json';
+    final url =
+        'https://aquarium-shop-b8c06-default-rtdb.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.get(Uri.parse(url));
       final extractedData = json.decode(response.body) as Map<String, dynamic>;

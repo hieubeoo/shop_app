@@ -5,6 +5,7 @@ import 'package:shop_app/screens/cart_screen.dart';
 import 'package:shop_app/screens/edit_product_screen.dart';
 import 'package:shop_app/screens/order_screen.dart';
 import 'package:shop_app/screens/product_detail_screen.dart';
+import 'package:shop_app/screens/products_overview_screen.dart';
 import 'package:shop_app/screens/tab_screen.dart';
 import 'package:shop_app/screens/user_products_screen.dart';
 import './providers/product_provider.dart';
@@ -22,7 +23,17 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => Auth()),
-        ChangeNotifierProvider(create: (ctx) => ProductsProvider()),
+        ChangeNotifierProxyProvider<Auth, ProductsProvider>(
+          update: (
+            ctx,
+            authData,
+            previousProduct,
+          ) =>
+              ProductsProvider(
+            authData.token,
+            previousProduct == null ? [] : previousProduct.items,
+          ),
+        ),
         ChangeNotifierProvider(create: (ctx) => Cart()),
         ChangeNotifierProvider(create: (ctx) => Orders()),
       ],
