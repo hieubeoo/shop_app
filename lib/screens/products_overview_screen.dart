@@ -10,28 +10,36 @@ enum FilterOptions {
 
 class ProductsOverviewScreen extends StatelessWidget {
   final _showOnlyFavorites = false;
+  Future<void> _refreshProducts(BuildContext context) async {
+    await Provider.of<ProductsProvider>(context, listen: false)
+        .fetAndSetProducts();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: Provider.of<ProductsProvider>(context, listen: false)
-            .fetAndSetProducts(),
-        builder: (ctx, dataSnapshot) {
-          if (dataSnapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Colors.grey,
-              ),
-            );
-          } else {
-            if (dataSnapshot.error != null) {
+    return RefreshIndicator(
+      color: Colors.blue,
+      onRefresh: () => _refreshProducts(context),
+      child: FutureBuilder(
+          future: Provider.of<ProductsProvider>(context, listen: false)
+              .fetAndSetProducts(),
+          builder: (ctx, dataSnapshot) {
+            if (dataSnapshot.connectionState == ConnectionState.waiting) {
               return Center(
-                child: Text('Something wrong :))'),
+                child: CircularProgressIndicator(
+                  backgroundColor: Colors.blue,
+                ),
               );
             } else {
-              return ProductsGrid(_showOnlyFavorites);
+              if (dataSnapshot.error != null) {
+                return Center(
+                  child: Text(dataSnapshot.error.toString()),
+                );
+              } else {
+                return ProductsGrid(_showOnlyFavorites, '');
+              }
             }
-          }
-        });
+          }),
+    );
   }
 }

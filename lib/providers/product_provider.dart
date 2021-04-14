@@ -10,10 +10,15 @@ class ProductsProvider with ChangeNotifier {
     return _items.where((productItem) => productItem.isFavorite).toList();
   }
 
+  final String userId;
   final String authToken;
-  ProductsProvider(this.authToken, this._items);
+  ProductsProvider(this.authToken, this.userId, this._items);
   List<Product> get items {
     return [..._items];
+  }
+
+  List<Product> productByCategory(String category) {
+    return [..._items.where((prod) => prod.category == category)].toList();
   }
 
   Product findById(String id) {
@@ -21,8 +26,8 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> addProductItem(Product product) async {
-    const url =
-        'https://aquarium-shop-b8c06-default-rtdb.firebaseio.com/products.json?';
+    final url =
+        'https://aquarium-shop-b8c06-default-rtdb.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.post(Uri.parse(url),
           body: json.encode({
@@ -31,14 +36,16 @@ class ProductsProvider with ChangeNotifier {
             'id': product.id,
             'description': product.description,
             'imageUrl': product.imageUrl,
-            'isFavorite': product.isFavorite,
+            'category': product.category,
           }));
       final newProduct = Product(
-          id: json.decode(response.body)['name'],
-          description: product.description,
-          imageUrl: product.imageUrl,
-          price: product.price,
-          title: product.title);
+        id: json.decode(response.body)['name'],
+        description: product.description,
+        imageUrl: product.imageUrl,
+        price: product.price,
+        title: product.title,
+        category: product.category,
+      );
       _items.add(newProduct);
       notifyListeners();
     } catch (error) {
@@ -47,7 +54,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> fetAndSetProducts() async {
-    final url =
+    var url =
         'https://aquarium-shop-b8c06-default-rtdb.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.get(Uri.parse(url));
@@ -56,6 +63,11 @@ class ProductsProvider with ChangeNotifier {
       if (extractedData == null) {
         return;
       }
+      url =
+          'https://aquarium-shop-b8c06-default-rtdb.firebaseio.com/userFavorite/$userId.json?auth=$authToken';
+
+      final favoriteResponse = await http.get(Uri.parse(url));
+      final favoriteData = json.decode(favoriteResponse.body);
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
             id: prodId,
@@ -63,7 +75,9 @@ class ProductsProvider with ChangeNotifier {
             imageUrl: prodData['imageUrl'],
             price: prodData['price'],
             title: prodData['title'],
-            isFavorite: prodData['isFavorite']));
+            category: prodData['category'],
+            isFavorite:
+                favoriteData == null ? false : favoriteData[prodId] ?? false));
       });
       _items = loadedProducts;
       notifyListeners();
@@ -76,7 +90,7 @@ class ProductsProvider with ChangeNotifier {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
       final url =
-          'https://aquarium-shop-b8c06-default-rtdb.firebaseio.com/products/$id.json';
+          'https://aquarium-shop-b8c06-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken';
       await http.patch(Uri.parse(url),
           body: json.encode({
             'title': product.title,
@@ -91,7 +105,7 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> deleteProducItem(String id) async {
     final url =
-        'https://aquarium-shop-b8c06-default-rtdb.firebaseio.com/products/$id.json';
+        'https://aquarium-shop-b8c06-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken';
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     var existingProduct = _items[existingProductIndex];
     final response = await http.delete(Uri.parse(url));

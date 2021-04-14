@@ -41,14 +41,19 @@ class ProductDetailScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
+                  'Giá: ',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                Text(
                   '${loadedProduct.price}đ',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 20,
-                  ),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
-                  width: 10,
+                  width: 15,
+                ),
+                Text(
+                  'Giỏ hàng:',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
                   icon: Icon(
@@ -88,6 +93,7 @@ class ProductDetailScreen extends StatelessWidget {
                 loadedProduct.description,
                 textAlign: TextAlign.center,
                 softWrap: true,
+                style: TextStyle(fontSize: 18, height: 1.7),
               ),
             )
           ],

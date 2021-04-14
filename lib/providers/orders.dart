@@ -5,7 +5,7 @@ import 'dart:convert';
 
 class OrderItem {
   final String id;
-  final double amount;
+  final int amount;
   final List<CartItem> products;
   final DateTime dateTime;
   OrderItem({
@@ -18,13 +18,15 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   List<OrderItem> _oders = [];
+  final String authToken;
+  Orders(this._oders, this.authToken);
   List<OrderItem> get orders {
     return [..._oders];
   }
 
   Future<void> fetAndSetOrder() async {
-    const url =
-        'https://aquarium-shop-b8c06-default-rtdb.firebaseio.com/orders.json';
+    final url =
+        'https://aquarium-shop-b8c06-default-rtdb.firebaseio.com/orders.json?auth=$authToken';
     final response = await http.get(Uri.parse(url));
     final List<OrderItem> loadedOrders = [];
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -54,9 +56,9 @@ class Orders with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addOrder(List<CartItem> cartProduct, double total) async {
-    const url =
-        'https://aquarium-shop-b8c06-default-rtdb.firebaseio.com/orders.json';
+  Future<void> addOrder(List<CartItem> cartProduct, int total) async {
+    final url =
+        'https://aquarium-shop-b8c06-default-rtdb.firebaseio.com/orders.json?auth=$authToken';
     final timestamp = DateTime.now();
     final response = await http.post(
       Uri.parse(url),

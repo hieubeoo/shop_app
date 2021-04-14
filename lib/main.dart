@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/providers/cart.dart';
 import 'package:shop_app/screens/cart_screen.dart';
-import 'package:shop_app/screens/edit_product_screen.dart';
 import 'package:shop_app/screens/order_screen.dart';
+import 'package:shop_app/screens/product_by_category_screen.dart';
 import 'package:shop_app/screens/product_detail_screen.dart';
-import 'package:shop_app/screens/products_overview_screen.dart';
 import 'package:shop_app/screens/tab_screen.dart';
-import 'package:shop_app/screens/user_products_screen.dart';
 import './providers/product_provider.dart';
 import './providers/orders.dart';
 import './screens/auth_screen.dart';
@@ -31,11 +29,17 @@ class MyApp extends StatelessWidget {
           ) =>
               ProductsProvider(
             authData.token,
+            authData.userId,
             previousProduct == null ? [] : previousProduct.items,
           ),
         ),
         ChangeNotifierProvider(create: (ctx) => Cart()),
-        ChangeNotifierProvider(create: (ctx) => Orders()),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          update: (ctx, authData, previousOrder) => Orders(
+            previousOrder == null ? [] : previousOrder.orders,
+            authData.token,
+          ),
+        ),
       ],
       child: Consumer<Auth>(
         builder: (ctx, authData, _) => MaterialApp(
@@ -50,8 +54,7 @@ class MyApp extends StatelessWidget {
             ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
             CartScreen.routeName: (ctx) => CartScreen(),
             OrderScreen.routeName: (ctx) => OrderScreen(),
-            UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
-            EditProductScreen.routeName: (ctx) => EditProductScreen(),
+            ProductsByCategory.routeName: (ctx) => ProductsByCategory(),
           },
         ),
       ),

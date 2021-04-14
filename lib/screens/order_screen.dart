@@ -9,10 +9,9 @@ class OrderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final orderData = Provider.of<Orders>(context);
     return Scaffold(
         appBar: AppBar(
-          title: Text('Your order'),
+          title: Text('Sản phẩm bạn đã đặt'),
         ),
         drawer: AppDrawer(),
         body: FutureBuilder(
@@ -21,7 +20,7 @@ class OrderScreen extends StatelessWidget {
             if (dataSnapshot.connectionState == ConnectionState.waiting) {
               return Center(
                 child: CircularProgressIndicator(
-                  backgroundColor: Colors.grey,
+                  backgroundColor: Colors.blue,
                 ),
               );
             } else {

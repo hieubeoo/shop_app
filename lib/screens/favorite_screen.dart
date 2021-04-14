@@ -5,6 +5,6 @@ class FavoriteScreen extends StatelessWidget {
   final _showOnlyFavorites = true;
   @override
   Widget build(BuildContext context) {
-    return ProductsGrid(_showOnlyFavorites);
+    return ProductsGrid(_showOnlyFavorites, '');
   }
 }

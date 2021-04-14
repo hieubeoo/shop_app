@@ -11,7 +11,7 @@ class TabsScreen extends StatefulWidget {
 
 class _TabsScreenState extends State<TabsScreen> {
   final List<Map<String, Object>> _pages = [
-    {'title': 'Shop app', 'page': ProductsOverviewScreen()},
+    {'title': 'My Aquarium Shop', 'page': ProductsOverviewScreen()},
     {'title': 'Giỏ hàng của bạn', 'page': CartScreen()},
     {'title': 'Sản phẩm bạn đã yêu thích', 'page': FavoriteScreen()}
   ];
@@ -27,6 +27,7 @@ class _TabsScreenState extends State<TabsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         title: Text('${_pages[_selectPageIndex]['title']}'),
       ),
       drawer: AppDrawer(),
