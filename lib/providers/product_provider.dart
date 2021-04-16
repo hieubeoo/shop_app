@@ -21,6 +21,13 @@ class ProductsProvider with ChangeNotifier {
     return [..._items.where((prod) => prod.category == category)].toList();
   }
 
+  List<Product> searchProduct(String text) {
+    if (text.isEmpty) {
+      return [..._items];
+    }
+    return [..._items.where((prod) => prod.title.contains(text))].toList();
+  }
+
   Product findById(String id) {
     return _items.firstWhere((item) => item.id == id);
   }

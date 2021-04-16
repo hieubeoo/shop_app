@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/screens/order_screen.dart';
 import '../screens/product_by_category_screen.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -184,6 +186,20 @@ class AppDrawer extends StatelessWidget {
                   },
                 );
               }),
+          Divider(
+            thickness: 1,
+          ),
+          ListTile(
+            leading: Icon(Icons.exit_to_app),
+            title: Text(
+              'Đăng xuất',
+              style: TextStyle(fontSize: 17),
+            ),
+            onTap: () {
+              Navigator.of(context).pop();
+              Provider.of<Auth>(context, listen: false).logOut();
+            },
+          ),
         ],
       ),
     );

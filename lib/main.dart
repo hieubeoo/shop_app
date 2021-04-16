@@ -6,6 +6,7 @@ import 'package:shop_app/screens/order_screen.dart';
 import 'package:shop_app/screens/product_by_category_screen.dart';
 import 'package:shop_app/screens/product_detail_screen.dart';
 import 'package:shop_app/screens/tab_screen.dart';
+import 'package:shop_app/screens/waiting_screen.dart';
 import './providers/product_provider.dart';
 import './providers/orders.dart';
 import './screens/auth_screen.dart';
@@ -36,9 +37,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (ctx) => Cart()),
         ChangeNotifierProxyProvider<Auth, Orders>(
           update: (ctx, authData, previousOrder) => Orders(
-            previousOrder == null ? [] : previousOrder.orders,
-            authData.token,
-          ),
+              previousOrder == null ? [] : previousOrder.orders,
+              authData.token,
+              authData.userId),
         ),
       ],
       child: Consumer<Auth>(
@@ -49,7 +50,16 @@ class MyApp extends StatelessWidget {
             accentColor: Colors.white,
             fontFamily: 'Lato',
           ),
-          home: authData.isAuth ? TabsScreen() : AuthScreen(),
+          home: authData.isAuth
+              ? TabsScreen()
+              : FutureBuilder(
+                  builder: (ctx, authResultSnapShot) =>
+                      authResultSnapShot.connectionState ==
+                              ConnectionState.waiting
+                          ? WaitingScreen()
+                          : AuthScreen(),
+                  future: authData.tryAutoLogin(),
+                ),
           routes: {
             ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
             CartScreen.routeName: (ctx) => CartScreen(),
